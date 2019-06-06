@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
-import { LoadWraper } from './loading'
+import { LoadWraper } from './style'
 export default class Loading extends Component {
   render(h) {
-    let { tip } = this.props
+		let { tip } = this.props
     return (
       <LoadWraper className="loading" onTouchMove={(e) =>{e.preventDefault()}}>
         <span className="main">
@@ -33,7 +33,6 @@ export default class Loading extends Component {
 Loading.propTypes = {
   tip: PropTypes.string
 }
-
 Loading.newInstance = properties => {
   let props = properties || {}
   let div = document.createElement('div')
@@ -45,4 +44,22 @@ Loading.newInstance = properties => {
       document.body.removeChild(div)
     }
   }
+}
+	let loadingInstance = 0
+  let getLoadingInstance = (tip) => {
+		console.log(loadingInstance)
+    loadingInstance = loadingInstance || Loading.newInstance({
+        tip
+    })
+    return loadingInstance
+  }
+Loading.open = (tip='加载中...') => {
+	getLoadingInstance(tip)
+}
+
+Loading.close = () => {
+		if(loadingInstance) {
+				loadingInstance.destroy()
+				loadingInstance = null
+		}
 }

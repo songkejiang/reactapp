@@ -1,50 +1,87 @@
 import ReactDOM from 'react-dom'
-import React from 'react'
-import {Confirm} from './style.js'
-const Alert = props => {
-  return (
-    <Confirm className="mask" onTouchMove={(e) =>{e.preventDefault()}}>
-			<div className='am-modal-mask'></div>
-			<div className='am-modal-wrap'>
-					<div className='am-modal am-modal-transparent'>
-							<div className='am-modal-content'>
-								<div className='am-modal-header'>
-									 <div className='am-modal-title'>水电费</div>
-								</div>
-								<div className='am-modal-body'>
-										<div className='am-modal-alert-content'>
-											水电费水电费
+import React, { Component } from 'react'
+import { Confirm } from './style.js'
+import Mask from '../mask/index'
+@test
+class Alert extends Component {
+	constructor(props) {
+		super(props)
+	    
+		this.state={
+			showModel: false
+		}
+	}
+	componentDidMount() {
+		this.setState({
+			showModel: true
+		})
+
+	}
+    handleClose(item) {
+		this.setState({
+			showModel: false
+		}, ()=>{
+			setTimeout(()=> {
+				Alert.close()
+				item.onPress();
+			}, 300)
+		})
+	}
+    render() {
+    return (
+			<React.Fragment>{this.props.buttons.length}
+				{
+					this.props.buttons.length>0?<Confirm className="mask" onTouchMove={e => { e.preventDefault() }}>
+					<Mask
+					in={this.state.showModel}
+					classNames='fadeIn'
+					timeout={300}
+					unmountOnExit>
+					</Mask>
+						<div className="am-modal-wrap">
+							<div className={`am-modal ${this.state.showModel?'bounceIn':'bounceOut'}`}>
+									<div className="am-modal-content">
+										<div className="am-modal-header">
+											<div className="am-modal-title">{this.props.title}</div>
 										</div>
-								</div>
-								<div className='am-modal-footer'>
-										<div className='am-modal-button-group-h'>
-												<a className='am-modal-button'>Cnacel</a>
-												<a className='am-modal-button'>Ok</a>
+										<div className="am-modal-body">
+											<div className="am-modal-alert-content">{this.props.content}</div>
 										</div>
+										<div className="am-modal-footer">
+											<div className="am-modal-button-group-h">
+												{this.props.buttons.map(item => {
+													return (
+														<span className="am-modal-button" key={item.text} onClick={() => {this.handleClose(item)}}>
+															{item.text}
+														</span>
+													)
+												})}
+											</div>
+										</div>
+									</div>
 								</div>
-							</div>
-					</div>
-			</div>
-      <p>{props.title}</p>
-      <p>{props.content}</p>
-      <div>
-        {props.cbs.map((item, index) => {
-          return (
-            <span key={index} onClick={item.onPress}>
-              {item.text}
-            </span>
-          )
-        })}
-      </div>
-    </Confirm>
-  )
+						</div>
+					</Confirm>:''
+				}
+			</React.Fragment>
+    )
+  }
+}
+Alert.defaultProps={
+	title: '标题', content: '确认删除吗?', buttons: [] 
+}
+function test(target) {
+	target.div = document.createElement('div')
+	target.show = function() {
+		let props = { title: arguments[0], content: arguments[1], buttons: arguments[2] }
+		document.body.appendChild(Alert.div)
+		ReactDOM.render(React.createElement(Alert, props), Alert.div)
+	}
+	target.close = function () {
+		if (!document.documentElement.contains(Alert.div)) return
+		ReactDOM.unmountComponentAtNode(Alert.div)
+		document.body.removeChild(Alert.div)
+	}
 }
 
 export default Alert
-
-Alert.show = function() {
-  let props = { title: arguments[0], content: arguments[1], cbs: arguments[2] }
-  let div = document.createElement('div')
-  document.body.appendChild(div)
-  ReactDOM.render(React.createElement(Alert, props), div)
-}

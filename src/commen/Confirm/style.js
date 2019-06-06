@@ -1,6 +1,31 @@
-import styled from 'styled-components'
-
+import styled, { keyframes } from 'styled-components'
+const scaleAnim = keyframes`
+   0% {transform: scale(0.3)}
+   30% {transform: scale(0.5)}
+   50% {transform: scale(0.8)}
+  70% {transform: scale(1.2)}
+  100% {transform: scale(1)}
+`
+const scaleAnimOut = keyframes`
+    0% {transform: scale(1); opacity:1}
+    30% {transform: scale(1.2)}
+    100% {transform: scale(0); opacity:0}
+`
 export const Confirm = styled.div`
+   .fadeIn-enter{
+     opacity: 0.01;
+   }
+   .fadeIn-enter-active {
+      opacity: 1;
+      transition: opacity .2s ease-in;
+    }
+    .fadeIn-exit{
+      opacity: 1;
+    }
+   .fadeIn-exit-active {
+      opacity: 0;
+      transition: opacity .2s ease-in;
+   }
     position: fixed;
     top: 0;
     right: 0;
@@ -8,7 +33,6 @@ export const Confirm = styled.div`
     bottom: 0;
     height: 100%;
     z-index: 999;
-    background-color: rgba(0,0,0,.4);
     .am-modal-mask{
         position: fixed;
         top: 0;
@@ -17,7 +41,7 @@ export const Confirm = styled.div`
         bottom: 0;
         height: 100%;
         z-index: 999;
-        background-color: rgba(0,0,0,.4)
+        background-color: rgba(0,0,0,.4);
     }
     .am-modal-wrap{
         position: fixed;
@@ -44,9 +68,15 @@ export const Confirm = styled.div`
         justify-content: center;
         -webkit-transform: translateZ(1px);
         transform: translateZ(1px);
-        .am-modal-transparent{
+        .am-modal{
             width: 270px;
             position: relative;
+            &.bounceIn{
+              animation: ${scaleAnim} .2s ease-in forwards;
+            }
+            &.bounceOut{
+                animation: ${scaleAnimOut} .2s linear forwards;
+            }
         }
         .am-modal-content{
             border-radius: 7px;

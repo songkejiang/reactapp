@@ -1,19 +1,27 @@
 import React from 'react';
 import {Button} from 'antd-mobile';
-// import Test from './componens/canlendar/index'
+import {configure} from 'mobx';
+import {Provider} from 'mobx-react';
+import Test from './componens/Toast/index'
 import './api/http'
 import Model from './componens/Model/index'
-import './App.css'
+import Store from './store/index'
+import { GlobalStyle} from '@/assets/css/style.js'
+configure({'enforceActions': 'always'});
+var meetup = new Test()
+console.log(meetup.greet());
+  meetup.myName = "Ragul";
+  console.log(meetup.greet());
 function App() {
   return (
-    <div className="App">
-      {/* <Button>sdfsdf</Button> */}
-    <Button type="primary">按钮</Button>
-      { /*<ToastExample></ToastExample>
-     {/* <Test></Test> */}
-     <Model></Model>
-     {/* <Toast icon="loading" show={true}>Loading...</Toast> */}
-    </div>
+    <Provider {...Store}>
+      <div className="App">
+        <GlobalStyle/>
+      <Button type="primary">按钮</Button>
+        {/* <Test></Test> */}
+      <Model></Model>
+      </div>
+    </Provider>
   );
 }
 
