@@ -3,11 +3,13 @@ import { PikerWraper } from './style.js'
 import Mask from '../mask/index'
 import FormatDate from '@/utils/formatDate'
 import { CSSTransition } from 'react-transition-group'
+import { Toast} from 'antd-mobile';
+
 export default class DatePiker extends Component {
   constructor(props) {
     super(props)
     this.state = {
-			showDatePicker: true,
+			showDatePicker: false,
 			startTime: null,
 			endTime: null,
 			dayList: [],
@@ -17,22 +19,38 @@ export default class DatePiker extends Component {
     }
   }
   componentDidMount() {
-		this.initDate()
   }
   handlePikerClick() {
+		let {startTime, endTime} = this.props
+		if (!startTime) {
+			startTime = this.props.checkinDate
+		}
+		if (!endTime) {
+			endTime = this.props.checkoutDate
+		}
     this.setState({
-      showDatePicker: true
-    })
+			showDatePicker: true,
+			startTime: new Date(FormatDate('yyyy-MM-dd 00:00:00', startTime)).getTime(),
+			endTime: new Date(FormatDate('yyyy-MM-dd 00:00:00', endTime)).getTime()
+		}, ()=> {
+			this.initDate()
+		})
   }
   handleCancle() {
     this.setState({
-      showDatePicker: false
+			showDatePicker: false,
+			seletedIndex: null
     })
   }
   handleConfirm() {
+		if (!this.state.endTime) {
+			Toast.info('请选择离店日期', 1);
+			return 
+		}
     this.setState({
       showDatePicker: false
-    })
+		})
+		this.props.onChange({endTime: this.state.endTime, startTime: this.state.startTime})
 	}
 	async chooseDay(i, j, day, dayList) {
 		if (
@@ -88,49 +106,18 @@ export default class DatePiker extends Component {
 				tip : '共' + (((new Date(this.state.endTime).getTime() - new Date(this.state.startTime).getTime()) / 86400000) |
 				0) + '晚'
 			})
-
-			// setTimeout(() => {
-			// 	// 选择离店日期后将日期传出去
-			// 	this.$emit('choose', {
-			// 		checkinDate: FormatDate(
-			// 			'yyyy-MM-dd',
-			// 			new Date(this.startTime)
-			// 		),
-			// 		checkoutDate: FormatDate('yyyy-MM-dd', new Date(this.endTime))
-			// 	})
-			// 	this.data.open = false
-			// 	this.startTime = ''
-			// 	this.endTime = ''
-			// 	this.seletedIndex = ''
-			// }, 500)
 		}
 	}
 	initDate() {
 		this.dayList = [] // 每次初始化要将数组清空
-		let year = new Date(this.props.checkinDate).getFullYear() // 当前年份
-		let month = new Date(this.props.checkinDate).getMonth() // 当前月份
-		console.log('aaaa', month)
+		this.checkinDate =  new Date(FormatDate('yyyy-MM-dd 00:00:00', this.props.checkinDate)).getTime()
+		this.checkoutDate = new Date(FormatDate('yyyy-MM-dd 00:00:00', this.props.checkoutDate)).getTime()
+		let year = new Date(this.checkinDate).getFullYear() // 当前年份
+		let month = new Date(this.checkinDate).getMonth() // 当前月份
 		let _this = this
 		let i = 0
-		this.setState({
-			startTime: new Date(
-				FormatDate(
-					'yyyy-MM-dd',
-					new Date(this.props.checkinDate)
-				)
-			).getTime()
-		})
-		this.setState({
-			endTime: new Date(
-				FormatDate(
-					'yyyy-MM-dd',
-					new Date(this.props.checkoutDate)
-				)
-			).getTime()
-		})
 		function formateDate(y, m) {
-			console.log(m)
-			let currenDay = new Date(new Date(y, m)) //
+			let currenDay = new Date(y, m) //
 			let currentMonth = currenDay.getMonth() // 当前月份 比实际月份少 1
 			let fullYear = currenDay.getFullYear() // 当前年份
 			let days = new Date(fullYear, currentMonth + 1, 0).getDate() // 当前月多少天
@@ -148,19 +135,11 @@ export default class DatePiker extends Component {
 				} else {
 					obj2.weekDay = new Date(fullYear, currentMonth, k - firstDay + 1).getDay() // 获取周几
 					obj2.day = k - firstDay + 1
-					obj2.time = new Date(FormatDate('yyyy-MM-dd', new Date(fullYear, currentMonth, k - firstDay + 1))).getTime() // 点击时获取当前日期
-					obj2.initStart = new Date( // B端设置的开始时间
-						FormatDate('yyyy-MM-dd', new Date(_this.props.checkinDate))
-					).getTime()
-					obj2.initEnd = new Date( // B端设置的结束时间
-						FormatDate('yyyy-MM-dd', new Date(_this.props.checkoutDate))
-					).getTime()
-					obj2.start = new Date( // 用户选择的开始时间
-						FormatDate('yyyy-MM-dd', new Date(_this.state.startTime))
-					).getTime()
-					obj2.end = new Date( // 用户选择的结束时间
-						FormatDate('yyyy-MM-dd', new Date(_this.state.endTime))
-					).getTime()
+					obj2.time = new Date(fullYear, currentMonth, k - firstDay + 1).getTime() // 点击时获取当前日期
+					obj2.initStart = new Date(_this.checkinDate) // B端设置的开始时间
+					obj2.initEnd = new Date(_this.checkoutDate) // B端设置的结束时间
+					obj2.start = new Date(_this.state.startTime) // 用户选择的开始时间
+					obj2.end = new Date(_this.state.endTime) // 用户选择的结束时间
 					obj2.showtip = false
 					obj.days.push(obj2)
 				}
@@ -181,18 +160,24 @@ export default class DatePiker extends Component {
     const { children } = this.props
     return (
       <div className={this.props.className}>
-        <span onClick={this.handlePikerClick.bind(this)}>{children}</span>
-        <PikerWraper>
+        <span onClick={this.handlePikerClick.bind(this)}>
+					{React.Children.map(children, (child) => {
+						return child
+					})}
+				</span>
+        <PikerWraper
+				  timeout={200}
+				>
           <Mask
             in={this.state.showDatePicker}
             classNames="fadeIn"
-            timeout={300}
+            timeout={200}
             unmountOnExit
           />
           <CSSTransition
             in={this.state.showDatePicker}
             classNames="slideUp"
-            timeout={300}
+            timeout={900}
             unmountOnExit
           >
             <div className="pickerMain">
@@ -228,7 +213,7 @@ export default class DatePiker extends Component {
 														{
 															item.days.map((day, innerIndex)=> {
 																return(
-																	<li key={innerIndex} className={`day ${(this.state.seletedIndex==index+''+innerIndex||this.state.startTime===day.time||this.state.endTime==day.time)&&day.day!==0?'select':''} ${(day.weekDay==0||day.weekDay==6)?'colorRed':''} ${(day.time>=day.initStart&&day.time<=day.initEnd)?'canSelect':''}`}
+																	<li key={innerIndex} className={`day ${(this.state.seletedIndex==index+''+innerIndex||this.state.startTime === day.time)|| this.state.endTime === day.time&&day.day!==0?'select':''} ${(day.weekDay==0||day.weekDay==6)?'colorRed':''} ${(day.time>=day.initStart&&day.time<=day.initEnd)?'canSelect':''}`}
 																		onClick={()=> {this.chooseDay(index,innerIndex,day, this.state.dayList)}}
 																	>
 																		{
@@ -258,5 +243,7 @@ export default class DatePiker extends Component {
 }
 DatePiker.defaultProps = {
 	checkinDate: 1557936000000,
-	checkoutDate: 1561046400000
+	checkoutDate: 1560268800000,
+	startTime: '',
+	endTime: ''
 }

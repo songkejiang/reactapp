@@ -1,6 +1,5 @@
 import Axios from 'axios'
 import Loading from '../commen/loading/index'
-import { Toast} from 'antd-mobile';
 // console.log( Loading.newInstance)
 
 Axios.interceptors.request.use(function (config) {

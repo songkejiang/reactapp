@@ -1,16 +1,15 @@
 import styled, { keyframes } from 'styled-components'
-
 export const PikerWraper = styled.div`
   .slideUp-enter {
     transform: translateY(100%);
   }
   .slideUp-enter-active {
     transform: translateY(0%);
-    transition: all 0.3s linear;
+    transition: all ${props => props.timeout/1000}s linear;
   }
   .slideUp-exit {
     transform: translateY(0%);
-    transition: all 0.3s linear;
+    transition: all ${props => props.timeout/1000}s linear;
   }
   .slideUp-exit-active {
     transform: translateY(100%);

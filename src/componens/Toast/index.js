@@ -12,26 +12,14 @@ class ToastExample {
     }
 }
 function readonly(target, key, decorator) {
-  // descriptor对象原来的值如下
-  // {
-  //     value: specifiedFunction,
-  //     enumerable: false,
-  //     configurable: true,
-  //     writable: true
-// }
-console.log('target', target)
-console.log('key', key)
-console.log('decorator', decorator)
+
  var oldValue =  decorator.value
  decorator.value = function() {
   console.log(`Calling "${key}" with`, arguments,target);
   let value = oldValue.apply(null, arguments);
   return value
  }
-// console.log('decorator', decorator.value)
-// console.log('oldValue', oldValue)
 
-  // decorator.writable = false;  // 不可写
   return decorator;
 }
 

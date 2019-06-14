@@ -4,9 +4,10 @@ import { Confirm } from './style.js'
 import Mask from '../mask/index'
 @test
 class Alert extends Component {
-	constructor(props) {
-		super(props)
-	    
+	constructor(props, context) {
+		super(props, context)
+	    console.log('props', props)
+	    console.log('context', context)
 		this.state={
 			showModel: false
 		}

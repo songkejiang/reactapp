@@ -47,7 +47,6 @@ Loading.newInstance = properties => {
 }
 	let loadingInstance = 0
   let getLoadingInstance = (tip) => {
-		console.log(loadingInstance)
     loadingInstance = loadingInstance || Loading.newInstance({
         tip
     })
