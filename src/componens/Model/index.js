@@ -4,8 +4,8 @@ import {Button} from 'antd-mobile';
 import axios from 'axios'
 import Alert from '../../commen/Confirm'
 import DatePicker from '../../commen/datePicker/index'
+import DatePickerHook from '../../commen/datePicker-hook/index'
 import { observer, inject } from 'mobx-react'
-import FormatDate from '@/utils/formatDate'
 
 @inject('modelStore')
 @observer class Model extends Component {
@@ -36,7 +36,11 @@ import FormatDate from '@/utils/formatDate'
 				{day: '请选择日期', checkinDate: Date.now(), checkoutDate: Date.now() + 3600 * 24 * 1000 * 10, startTime: Date.now(), endTime: Date.now() + 3600 * 24 * 1000 * 10},
 				{day: '请选择日期', checkinDate: Date.now(), checkoutDate: Date.now() + 3600 * 24 * 1000 * 13},
 				{day: '请选择日期', checkinDate: Date.now(), checkoutDate: Date.now() + 3600 * 24 * 1000 * 6}
-			]
+      ],
+      checkinDate: Date.now(),
+      checkoutDate: Date.now() + 3600 * 24 * 1000 * 10,
+      startTime: Date.now(),
+      endTime: Date.now() + 3600 * 24 * 1000 * 10
 		}
   }
   componentDidMount() {
@@ -71,7 +75,14 @@ import FormatDate from '@/utils/formatDate'
 		this.setState({
 			list: this.state.list
 		})
-	}
+  }
+  confirmDate2(e) {
+    console.log(e)
+    this.setState({
+			startTime: e.startTime,
+			endTime: e.endTime,
+		})
+  }
   render() {
 		const {count, user, changeUser} = this.props.modelStore
     return (
@@ -84,7 +95,7 @@ import FormatDate from '@/utils/formatDate'
 						<div>{item.day}</div>
 					</DatePicker>
 				})}
-        
+        <DatePickerHook checkinDate={this.state.checkinDate} startTime={this.state.startTime} endTime={this.state.endTime} checkoutDate={this.state.checkoutDate} onChange={this.confirmDate2.bind(this)}>as</DatePickerHook>
         {/* {this.state.showAlert?<Alert buttons={this.state.buttons} title='sss' content='sssssss'></Alert>:''} */}
       </div>
     )

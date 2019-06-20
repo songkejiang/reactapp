@@ -2,10 +2,11 @@ import React from 'react';
 // import {HashRouter, Route, Switch} from 'react-router-dom';
 import { HashRouter as Router, Route, Link, Switch } from "react-router-dom";
 import asyncComponents from './asyncComponents'
-const Hooks = asyncComponents(() => import('@/componens/hooks/index'))
-const Bus = asyncComponents(() => import('@/componens/hooks/bus'))
-const Cart = asyncComponents(() => import('@/componens/hooks/cart'))
-const Index = asyncComponents(() => import('@/componens/index/index'))
+import loadable from 'loadable-components'
+const Hooks = loadable(() => import('@/componens/hooks/index'))
+const Bus = loadable(() => import('@/componens/hooks/bus'))
+const Cart = loadable(() => import('@/componens/hooks/cart'))
+const Index = loadable(() => import('@/componens/index/index'))
 export function RouteWithSubRoutes(route) {
     return (
       <Route
